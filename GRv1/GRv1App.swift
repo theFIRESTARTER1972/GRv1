@@ -10,23 +10,22 @@ import SwiftData
 
 @main
 struct GRv1App: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    @State private var showLanding = true
+    @State private var showLandingPage = true
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if #available(iOS 16.0, *) {
+                if showLandingPage {
+                    LandingPageView(showLandingPage: $showLandingPage, showLanding: $showLanding)
+                } else if showLanding {
+                    LandingView(showLandingPage: $showLandingPage, showLanding: $showLanding)
+                } else {
+                    ProductListView(showLanding: $showLanding)
+                }
+            } else {
+                ProductListView(showLanding: .constant(false))
+            }
         }
-        .modelContainer(sharedModelContainer)
     }
 }
